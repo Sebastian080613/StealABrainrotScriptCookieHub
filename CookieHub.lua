@@ -1,4 +1,4 @@
---// Orion Library Loader
+Orion Library Loader
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sebastian080613/StealABrainrotScriptCookieHub/main/CookieHub.lua"))()
 
 local Window = OrionLib:MakeWindow({
