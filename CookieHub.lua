@@ -1,191 +1,91 @@
-Orion Library Loader
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sebastian080613/StealABrainrotScriptCookieHub/main/CookieHub.lua"))()
+-- CookieHub | Rayfield Version
+-- Fully self-contained for Delta and any game
 
-local Window = OrionLib:MakeWindow({
-    Name = "Steal A Brainrot | Control Panel",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "SAB_Control"
+repeat task.wait() until game:IsLoaded()
+
+local Rayfield = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/JayJayWasHere/Rayfield/main/source"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "CookieHub | Steal A Brainrot Tools",
+    LoadingTitle = "Loading CookieHub...",
+    LoadingSubtitle = "by Sebastian080613",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "CookieHubConfig",
+        FileName = "Config"
+    },
+    Discord = {
+        Enabled = false
+    }
 })
 
---=====================================================
--- VARIABLES
---=====================================================
+print("CookieHub Loaded | Rayfield active")
 
-local player = game.Players.LocalPlayer
-local char = player.Character or player.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
+-- MAIN TAB
+local MainTab = Window:CreateTab("Main")
 
-local autoTP = false
-local autoCollect = false
-local autoLock = false
-
---=====================================================
--- TAB: MAIN
---=====================================================
-
-local MainTab = Window:MakeTab({
-    Name = "Main",
-    Icon = "rbxassetid://4483345998"
+MainTab:CreateParagraph({
+    Title = "Welcome!",
+    Content = "CookieHub is now loaded and ready!"
 })
 
-MainTab:AddParagraph("Welcome!", "Tools designed specifically for Steal a Brainrot.")
-
-MainTab:AddButton({
-    Name = "Teleport to Base",
+MainTab:CreateButton({
+    Name = "Print Hello",
     Callback = function()
-        if workspace.Bases:FindFirstChild(player.Name) then
-            hrp.CFrame = workspace.Bases[player.Name].Primary.CFrame + Vector3.new(0,3,0)
-        end
+        print("Hello from CookieHub (Rayfield)!")
     end
 })
 
-MainTab:AddButton({
-    Name = "Teleport to Dealer",
-    Callback = function()
-        local dealer = workspace:FindFirstChild("BrainrotDealer")
-        if dealer then
-            hrp.CFrame = dealer.PrimaryPart.CFrame + Vector3.new(0,4,0)
-        end
+MainTab:CreateToggle({
+    Name = "Example Toggle",
+    CurrentValue = false,
+    Flag = "ExampleToggle",
+    Callback = function(value)
+        print("Toggle is now:", value)
     end
 })
 
-MainTab:AddToggle({
-    Name = "Auto Collect Brainrots",
-    Default = false,
-    Callback = function(v)
-        autoCollect = v
-        while autoCollect do task.wait(0.25)
-            for _, brainrot in pairs(workspace:GetDescendants()) do
-                if brainrot.Name == "BrainrotItem" and brainrot:IsA("BasePart") then
-                    hrp.CFrame = brainrot.CFrame + Vector3.new(0,3,0)
-                end
-            end
-        end
-    end
-})
+-- PLAYER TAB
+local PlayerTab = Window:CreateTab("Player")
 
---=====================================================
--- TAB: BASE CONTROL
---=====================================================
-
-local BaseTab = Window:MakeTab({
-    Name = "Base Tools",
-    Icon = "rbxassetid://4483345998"
-})
-
-BaseTab:AddToggle({
-    Name = "Auto Lock Base",
-    Default = false,
-    Callback = function(v)
-        autoLock = v
-        while autoLock do task.wait(1)
-            local root = workspace.Bases:FindFirstChild(player.Name)
-            if root and root.LockFolder and root.LockFolder.LockValue then
-                if root.LockFolder.LockValue.Value == false then
-                    root.LockFolder.LockValue.Value = true
-                end
-            end
-        end
-    end
-})
-
-BaseTab:AddButton({
-    Name = "Force Lock Now",
-    Callback = function()
-        local root = workspace.Bases:FindFirstChild(player.Name)
-        if root and root.LockFolder and root.LockFolder.LockValue then
-            root.LockFolder.LockValue.Value = true
-        end
-    end
-})
-
-BaseTab:AddButton({
-    Name = "Force Unlock Now",
-    Callback = function()
-        local root = workspace.Bases:FindFirstChild(player.Name)
-        if root and root.LockFolder and root.LockFolder.LockValue then
-            root.LockFolder.LockValue.Value = false
-        end
-    end
-})
-
---=====================================================
--- TAB: BRAINROT LOCATOR
---=====================================================
-
-local LocatorTab = Window:MakeTab({
-    Name = "Brainrot Finder",
-    Icon = "rbxassetid://4483345998"
-})
-
-LocatorTab:AddToggle({
-    Name = "Auto TP to Nearest Brainrot",
-    Default = false,
-    Callback = function(v)
-        autoTP = v
-        while autoTP do task.wait(0.25)
-            local nearest, dist = nil, 9999
-            for _, brainrot in ipairs(workspace:GetDescendants()) do
-                if brainrot.Name == "BrainrotItem" and brainrot:IsA("BasePart") then
-                    local d = (hrp.Position - brainrot.Position).Magnitude
-                    if d < dist then
-                        nearest = brainrot
-                        dist = d
-                    end
-                end
-            end
-            if nearest then
-                hrp.CFrame = nearest.CFrame + Vector3.new(0,3,0)
-            end
-        end
-    end
-})
-
-LocatorTab:AddButton({
-    Name = "Highlight All Brainrots",
-    Callback = function()
-        for _, brainrot in ipairs(workspace:GetDescendants()) do
-            if brainrot.Name == "BrainrotItem" and brainrot:IsA("BasePart") then
-                local highlight = Instance.new("Highlight", brainrot)
-                highlight.FillTransparency = 1
-                highlight.OutlineColor = Color3.new(1, 0, 0)
-            end
-        end
-    end
-})
-
---=====================================================
--- TAB: PLAYER
---=====================================================
-
-local PlayerTab = Window:MakeTab({
-    Name = "Player",
-    Icon = "rbxassetid://4483345998"
-})
-
-PlayerTab:AddSlider({
+PlayerTab:CreateSlider({
     Name = "WalkSpeed",
+    CurrentValue = 16,
     Min = 16,
-    Max = 200,
-    Default = 16,
-    Callback = function(v)
-        char:WaitForChild("Humanoid").WalkSpeed = v
+    Max = 100,
+    Flag = "WalkSpeedSlider",
+    Callback = function(value)
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        if char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = value
+        end
     end
 })
 
-PlayerTab:AddSlider({
+PlayerTab:CreateSlider({
     Name = "JumpPower",
+    CurrentValue = 50,
     Min = 50,
-    Max = 400,
-    Default = 50,
-    Callback = function(v)
-        char:WaitForChild("Humanoid").JumpPower = v
+    Max = 200,
+    Flag = "JumpPowerSlider",
+    Callback = function(value)
+        local player = game.Players.LocalPlayer
+        local char = player.Character or player.CharacterAdded:Wait()
+        if char:FindFirstChild("Humanoid") then
+            char.Humanoid.JumpPower = value
+        end
     end
 })
 
---=====================================================
--- INIT
---=====================================================
+-- CUSTOM TAB
+local CustomTab = Window:CreateTab("Custom Features")
 
-OrionLib:Init()
+CustomTab:CreateButton({
+    Name = "Add Feature Example",
+    Callback = function()
+        print("Custom feature logic goes here!")
+    end
+})
+
+print("Rayfield CookieHub loaded successfully")
