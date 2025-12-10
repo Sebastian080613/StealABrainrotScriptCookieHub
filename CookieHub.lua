@@ -1,91 +1,38 @@
--- CookieHub | Rayfield Version
--- Fully self-contained for Delta and any game
-
-repeat task.wait() until game:IsLoaded()
-
-local Rayfield = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Sebastian080613/Rayfield/main/source"))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "CookieHub | Steal A Brainrot Tools",
-    LoadingTitle = "Loading CookieHub...",
-    LoadingSubtitle = "by Sebastian080613",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "CookieHubConfig",
-        FileName = "Config"
-    },
-    Discord = {
-        Enabled = false
-    }
+   Name = "99 nights in the forest script",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Cookie Hub",
+   LoadingSubtitle = "by SeaKong_King",
+   ShowText = "Rayfield", -- for mobile users to unhide rayfield, change if you'd like
+   Theme = "Default", -- Check https://[Log in to view URL]
+
+   ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Cookie Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = true, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Cookie Hub Key",
+      Subtitle = "Key System",
+      Note = "Go to https://github.com/Sebastian080613/CookieHubKey/blob/main/CookieHubKey.text" to find key, -- Use this to tell the user how to get a key
+      FileName = "CookieHubKey", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"https://github.com/Sebastian080613/CookieHubKey/blob/main/CookieHubKey.text"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
 })
-
-print("CookieHub Loaded | Rayfield active")
-
--- MAIN TAB
-local MainTab = Window:CreateTab("Main")
-
-MainTab:CreateParagraph({
-    Title = "Welcome!",
-    Content = "CookieHub is now loaded and ready!"
-})
-
-MainTab:CreateButton({
-    Name = "Print Hello",
-    Callback = function()
-        print("Hello from CookieHub (Rayfield)!")
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Example Toggle",
-    CurrentValue = false,
-    Flag = "ExampleToggle",
-    Callback = function(value)
-        print("Toggle is now:", value)
-    end
-})
-
--- PLAYER TAB
-local PlayerTab = Window:CreateTab("Player")
-
-PlayerTab:CreateSlider({
-    Name = "WalkSpeed",
-    CurrentValue = 16,
-    Min = 16,
-    Max = 100,
-    Flag = "WalkSpeedSlider",
-    Callback = function(value)
-        local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        if char:FindFirstChild("Humanoid") then
-            char.Humanoid.WalkSpeed = value
-        end
-    end
-})
-
-PlayerTab:CreateSlider({
-    Name = "JumpPower",
-    CurrentValue = 50,
-    Min = 50,
-    Max = 200,
-    Flag = "JumpPowerSlider",
-    Callback = function(value)
-        local player = game.Players.LocalPlayer
-        local char = player.Character or player.CharacterAdded:Wait()
-        if char:FindFirstChild("Humanoid") then
-            char.Humanoid.JumpPower = value
-        end
-    end
-})
-
--- CUSTOM TAB
-local CustomTab = Window:CreateTab("Custom Features")
-
-CustomTab:CreateButton({
-    Name = "Add Feature Example",
-    Callback = function()
-        print("Custom feature logic goes here!")
-    end
-})
-
-print("Rayfield CookieHub loaded successfully")
