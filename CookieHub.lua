@@ -54,5 +54,70 @@ local Toggle = MainTab:CreateToggle({
    Callback = function(Value)
    -- The function that takes place when the toggle is pressed
    -- The variable (Value) is a boolean on whether the toggle is true or false
+         local flying = false
+local noclipConn
+local flyConn
+local speed = 2 -- Increase for faster fly
+
+local function startFly()
+    local player = game.Players.LocalPlayer
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+
+    local hrp = char.HumanoidRootPart
+    flying = true
+
+    -- NoClip
+    noclipConn = game:GetService("RunService").Stepped:Connect(function()
+        for _, v in pairs(char:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.CanCollide = false
+            end
+        end
+    end)
+
+    -- Fly movement
+    flyConn = game:GetService("RunService").RenderStepped:Connect(function()
+        local move = Vector3.zero
+        local cam = workspace.CurrentCamera
+
+        if game.UserInputService:IsKeyDown(Enum.KeyCode.W) then
+            move += cam.CFrame.LookVector
+        end
+        if game.UserInputService:IsKeyDown(Enum.KeyCode.S) then
+            move -= cam.CFrame.LookVector
+        end
+        if game.UserInputService:IsKeyDown(Enum.KeyCode.A) then
+            move -= cam.CFrame.RightVector
+        end
+        if game.UserInputService:IsKeyDown(Enum.KeyCode.D) then
+            move += cam.CFrame.RightVector
+        end
+
+        hrp.Velocity = move * speed * 50
+    end)
+end
+
+local function stopFly()
+    flying = false
+
+    if noclipConn then noclipConn:Disconnect() end
+    if flyConn then flyConn:Disconnect() end
+
+    local char = game.Players.LocalPlayer.Character
+    if char then
+        -- Restore collisions
+        for _, v in pairs(char:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.CanCollide = true
+            end
+        end
+        -- Stop motion
+        if char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.Velocity = Vector3.zero
+        end
+    end
+end
+
    end,
 })
