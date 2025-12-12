@@ -46,3 +46,91 @@ Rayfield:Notify({
    Duration = 4,
    Image = nil,
 })
+
+local Toggle = MainTab:CreateToggle({
+   Name = "Fly No Clip",
+   CurrentValue = false,
+   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   -- The function that takes place when the toggle is pressed
+   -- The variable (Value) is a boolean on whether the toggle is true or false
+   end,
+})
+
+-- // Settings
+local flySpeed = 50
+
+-- // Get objects
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local root = char:WaitForChild("HumanoidRootPart")
+
+-- // UI toggle (Change this to your actual toggle)
+local toggle = script.Parent:WaitForChild("FlyNoClipToggle")  -- Example
+
+local flying = false
+local velocity = Vector3.zero
+
+-- // Fly + NoClip logic
+local function setNoClip(state)
+	for _, part in pairs(char:GetDescendants()) do
+		if part:IsA("BasePart") then
+			part.CanCollide = not state
+		end
+	end
+end
+
+local function startFly()
+	flying = true
+	setNoClip(true)
+
+	RunService.RenderStepped:Connect(function()
+		if flying then
+			root.Velocity = velocity
+		end
+	end)
+end
+
+local function stopFly()
+	flying = false
+	setNoClip(false)
+	root.Velocity = Vector3.zero
+end
+
+-- // Movement
+UIS.InputBegan:Connect(function(input)
+	if not flying then return end
+
+	if input.KeyCode == Enum.KeyCode.W then
+		velocity = workspace.CurrentCamera.CFrame.LookVector * flySpeed
+	elseif input.KeyCode == Enum.KeyCode.S then
+		velocity = -workspace.CurrentCamera.CFrame.LookVector * flySpeed
+	elseif input.KeyCode == Enum.KeyCode.A then
+		velocity = -workspace.CurrentCamera.CFrame.RightVector * flySpeed
+	elseif input.KeyCode == Enum.KeyCode.D then
+		velocity = workspace.CurrentCamera.CFrame.RightVector * flySpeed
+	elseif input.KeyCode == Enum.KeyCode.Space then
+		velocity = Vector3.new(0, flySpeed, 0)
+	elseif input.KeyCode == Enum.KeyCode.LeftShift then
+		velocity = Vector3.new(0, -flySpeed, 0)
+	end
+end)
+
+UIS.InputEnded:Connect(function(input)
+	if flying then
+		velocity = Vector3.zero
+	end
+end)
+
+-- // Toggle handler
+toggle.Changed:Connect(function(value)
+	if value == true then
+		startFly()
+	else
+		stopFly()
+	end
+end)
